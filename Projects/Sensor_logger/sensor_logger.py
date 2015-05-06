@@ -51,8 +51,10 @@ def init():
 
 def error(err_message):
     timeNow = datetime.datetime.now()
-	
-    writeContFile()("logs/log_err_%d_%d_%d.txt" %(timeNow.day,timeNow.month,timeNow.year),
+
+    writeSingleLineFile("last_error","ERROR" + err_message + "\n")
+
+    writeContFile("logs/log_err_%d_%d_%d.txt" %(timeNow.day,timeNow.month,timeNow.year),
                    timeNow.isoformat() + "   ERROR" + err_message + "\n")
 
 
