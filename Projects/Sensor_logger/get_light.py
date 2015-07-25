@@ -107,45 +107,10 @@ def writeSingleValues(tempIn, tempOut ,humIn ,humOut ,light ,lastSound):
 
 init()
 
-while True:
-    try:
-        [temp,humidity] = grovepi.dht(temperatureSensorIn,0)
-        tempIn = temp
-        humIn = humidity
-
-        if tempIn > float_tempOutMax:
-            float_tempOutMax = tempIn
-        elif tempIn < float_tempInMin:
-            float_tempInMin = tempIn
-        
-        [temp,humidity] = grovepi.dht(temperatureSensorOut,1)
-        tempOut = temp
-        humOut = humidity
-
-        if tempOut > float_tempOutMax:
-            float_tempOutMax = tempOut
-        elif tempOut < float_tempOutMin:
-            float_tempOutMin = tempOut
-	
-        light = grovepi.analogRead(lightSensor)
-
-
-        sound_level = grovepi.analogRead(soundSensor)
-        if sound_level > 0:
-            int_lastSound = sound_level
-					
-        time_now = datetime.datetime.now()
-
-        writeContFile("logs/log_%d_%d_%d.txt" %(time_now.day,time_now.month,time_now.year),
-                              time_now.isoformat() + " || IN: " +  "Temp: %.2f, Hum: %.0f || OUT: Temp: %.2f, Hum: %.0f || Light: %d || Sound: %d \n" %(tempIn,humIn,tempOut,humOut,light,int_lastSound))
-	 
-        writeSingleValues(tempIn, tempOut, humIn, humOut, light, int_lastSound)
-
-        writeMinMax()
-		
-        time.sleep(30)
-    except IOError:
-        pass
-    except:
-        error(" Running" + traceback.format_exc())
-        time.sleep(10)
+try:
+    light = grovepi.analogRead(lightSensor)
+    print(light)
+except IOError:
+    pass
+except:
+    error(" Running" + traceback.format_exc())
