@@ -1,6 +1,4 @@
 #! /bin/bash
-
-#! /bin/bash
 echo -e "\E[32m"
 echo "  _____            _                                ";
 echo " |  __ \          | |                               ";
@@ -54,8 +52,8 @@ read
 echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
-wget -q --tries=2 --timeout=20 http://google.com
-if [[ $? -eq 0 ]];then
+wget -q --tries=2 --timeout=100 http://google.com
+if [ $? -eq 0 ];then
 	echo "Connected"
 else
 	echo "Unable to Connect, try again !!!"
@@ -65,7 +63,8 @@ fi
 echo " "
 echo "Installing Dependencies"
 echo "======================="
-sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom
+sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom python-dev
+sudo pip install -U RPi.GPIO
 echo "Dependencies installed"
 
 git clone git://git.drogon.net/wiringPi
@@ -112,6 +111,13 @@ else
 	echo "spi-dev added"
 fi
 
+echo " "
+echo "Making I2C changes in /boot/config.txt . . ."
+echo "================================================"
+
+echo dtparam=i2c1=on >> /boot/config.txt
+echo dtparam=i2c_arm=on >> /boot/config.txt
+
 #Adding ARDUINO setup files
 echo " "
 echo "Making changes to Arduino . . ."
@@ -125,6 +131,10 @@ cd /tmp
 wget http://project-downloads.drogon.net/gertboard/setup.sh
 chmod +x setup.sh
 sudo ./setup.sh
+
+echo " "
+echo "Install smbus for python"
+sudo apt-get install python-smbus
 
 echo " "
 echo "Restarting"

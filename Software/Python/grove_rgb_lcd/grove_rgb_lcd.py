@@ -1,17 +1,26 @@
-# grovepi + grove RGB LCD module
-#http://www.seeedstudio.com/wiki/Grove_-_LCD_RGB_Backlight
+#!/usr/bin/env python
 #
-# Just supports setting the backlight colour, and
-# putting a single string of text onto the display
-# Doesn't support anything clever, cursors or anything
-
+# GrovePi Example for using the Grove - LCD RGB Backlight (http://www.seeedstudio.com/wiki/Grove_-_LCD_RGB_Backlight)
+#
+# The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
+#
+# Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/?forum=grovepi
+#
+# LICENSE: 
+# These files have been made available online through a [Creative Commons Attribution-ShareAlike 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.
+#
+# NOTE:
+# 	Just supports setting the backlight colour, and
+# 	putting a single string of text onto the display
+# 	Doesn't support anything clever, cursors or anything
 
 import time,sys
 import RPi.GPIO as GPIO
 import smbus
 
-DISPLAY_RGB_ADDR=0x62
-DISPLAY_TEXT_ADDR=0x3e
+# this device has two I2C addresses
+DISPLAY_RGB_ADDR = 0x62
+DISPLAY_TEXT_ADDR = 0x3e
 
 # use the bus that matches your raspi version
 rev = GPIO.RPI_REVISION
@@ -35,24 +44,24 @@ def textCommand(cmd):
 
 # set display text \n for second line(or auto wrap)     
 def setText(text):
-  textCommand(0x01) # clear display
-  time.sleep(0.05)
-  textCommand(0x08|0x04) # display on, no cursor
-  textCommand(0x28) # 2 lines
-  time.sleep(0.05)
-  count = 0
-  row=0
-  for c in text:
-    if c=='\n':
-        count=0
-        row=1
-        textCommand(0xc0)
-        continue
-    if count==16 and row==0:
-        textCommand(0xc0)
-        row+=1
-    count+=1
-    bus.write_byte_data(DISPLAY_TEXT_ADDR,0x40,ord(c))
+    textCommand(0x01) # clear display
+    time.sleep(.05)
+    textCommand(0x08 | 0x04) # display on, no cursor
+    textCommand(0x28) # 2 lines
+    time.sleep(.05)
+    count = 0
+    row = 0
+    for c in text:
+        if c == '\n' or count == 16:
+            count = 0
+            row += 1
+            if row == 2:
+                break
+            textCommand(0xc0)
+            if c == '\n':
+                continue
+        count += 1
+        bus.write_byte_data(DISPLAY_TEXT_ADDR,0x40,ord(c))
 
 
 # example code
@@ -60,10 +69,7 @@ if __name__=="__main__":
     setText("Hello world\nThis is an LCD test")
     setRGB(0,128,64)
     for c in range(0,255):
-      setRGB(c,255-c,0)
-      time.sleep(0.01)
+        setRGB(c,255-c,0)
+        time.sleep(0.01)
     setRGB(0,255,0)
     setText("Bye bye, this should wrap onto next line")
-
-
-
